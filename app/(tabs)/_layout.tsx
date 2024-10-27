@@ -1,37 +1,122 @@
-import { Tabs } from 'expo-router';
-import React from 'react';
+import { View, Text, Image } from "react-native";
+import React from "react";
+import { Tabs } from "expo-router";
+import icons from "@/constants/icons";
 
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+const BarIcon = ({
+  color,
+  focused,
+  icon,
+  name,
+}: {
+  color: string;
+  focused: boolean;
+  icon: any;
+  name: string;
+}) => {
+  return (
+    <View className="flex items-center justify-center gap-2">
+      <Image
+        source={icon}
+        resizeMode="contain"
+        tintColor={color}
+        className="w-6 h-6"
+      />
+      <Text
+        className={`${focused ? "font-bold" : ""} text-xs`}
+        style={{ color: color }}
+      >
+        {name}
+      </Text>
+    </View>
+  );
+};
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+const _layout = () => {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-      }}>
+        tabBarShowLabel: false,
+        tabBarActiveTintColor: "#FFA001",
+        tabBarInactiveTintColor: "#CDCDE0",
+        tabBarStyle: {
+          backgroundColor: "#161622",
+          borderTopWidth: 1,
+          borderTopColor: "#232533",
+          height: 64,
+        },
+      }}
+    >
       <Tabs.Screen
-        name="index"
+        name="contacts"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
-          ),
+          headerShown: false,
+          title: "Contact",
+          tabBarIcon: ({ color, focused }) => {
+            return (
+              <BarIcon
+                color={color}
+                focused={focused}
+                icon={icons.call}
+                name="Contacts"
+              />
+            );
+          },
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="bookmark"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
-          ),
+          headerShown: false,
+          title: "Bookmark",
+          tabBarIcon: ({ color, focused }) => {
+            return (
+              <BarIcon
+                color={color}
+                focused={focused}
+                icon={icons.bookmark}
+                name="Bontacts"
+              />
+            );
+          },
+        }}
+      />
+      <Tabs.Screen
+        name="create"
+        options={{
+          headerShown: false,
+          title: "Create",
+          tabBarIcon: ({ color, focused }) => {
+            return (
+              <BarIcon
+                color={color}
+                focused={focused}
+                icon={icons.plus}
+                name="Create"
+              />
+            );
+          },
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          headerShown: false,
+          title: "Settings",
+          tabBarIcon: ({ color, focused }) => {
+            return (
+              <BarIcon
+                color={color}
+                focused={focused}
+                icon={icons.settings}
+                name="Settings"
+              />
+            );
+          },
         }}
       />
     </Tabs>
   );
-}
+};
+
+export default _layout;
