@@ -1,72 +1,42 @@
-import { View, Text, ScrollView, FlatList } from "react-native";
+import { View, Text, ScrollView, FlatList, Image } from "react-native";
 import React, { SetStateAction, useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
-import * as Contacts from "expo-contacts";
+import icons from "@/constants/icons";
+import { Link } from "expo-router";
 
 const settings = () => {
-  const [contacts, setContacts] = useState([]);
-  useEffect(() => {
-    (async () => {
-      const { status } = await Contacts.requestPermissionsAsync();
-      if (status === "granted") {
-        const { data } = await Contacts.getContactsAsync();
-
-        if (data.length > 0) {
-          const ct = data.map((co) => {
-            return {
-              id: co.id,
-              firstName: co.name,
-              lastName: co.firstName,
-              phoneNumber: co.phoneNumbers,
-              image: co.image,
-            };
-          });
-          setContacts(ct);
-        }
-      }
-    })();
-  }, []);
   return (
-    <View className="h-full w-full bg-primary px-3">
+    <View className="h-full w-full bg-primary">
       <SafeAreaView>
-        <FlatList
-          data={contacts}
-          renderItem={(item) => {
-            console.log(item.item.image);
+        <View className="flex items-center flex-row gap-3 py-3 pt-5 mb-2 bg-gray-500/10 rounded-b-xl px-4">
+          <Image
+            source={icons.settings}
+            className="w-6 h-6"
+            resizeMode="contain"
+            tintColor="#FF9C01"
+          />
+          <Text className="text-xl text-secondary-200">Settings</Text>
+        </View>
 
-            return (
-              item.item.phoneNumber && (
-                <View
-                  className="border-b bg-gray-400/20 p-2 rounded-md my-1 flex flex-row gap-2 "
-                  key={item.index}
-                >
-                  <View className=" flex items-center justify-center  w-16 h-16  bg-black-100  rounded-full">
-                    <Text className="text-white text-lg">
-                      {item.item.firstName[0] || 0}
-                    </Text>
-                  </View>
-                  <View>
-                    <View className="flex-row flex ">
-                      <Text className="text-white">
-                        {item.item.firstName || 0} -{" "}
-                      </Text>
-                      <Text className="text-white">
-                        {item.item.lastName || 0}
-                      </Text>
-                    </View>
-                    <Text className="text-white">
-                      {item.item.phoneNumber[0].number}
-                    </Text>
-                  </View>
-                </View>
-              )
-            );
-          }}
-          keyExtractor={({ item, i }) => i}
-        />
+        <View className="px-4">
+          <Link
+            href="/import/phone"
+            className="w-full bg-slate-400/10 p-4 rounded-md border gap-5 border-gray-200/20 flex flex-row items-center justify-between"
+          >
+            <Image
+              source={icons.upload}
+              className="w-7 h-7"
+              resizeMode="contain"
+              tintColor="#FF9C01"
+            />
+            <Text className="text-white border-l ml-4">
+              Import contacts from my phone
+            </Text>
+          </Link>
+        </View>
       </SafeAreaView>
-      <StatusBar style="light" backgroundColor="#161622" />
+      <StatusBar style="light" backgroundColor="#6b72801a" />
     </View>
   );
 };

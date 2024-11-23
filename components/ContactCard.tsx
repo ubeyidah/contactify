@@ -7,7 +7,7 @@ import { useRouter } from "expo-router";
 const ContactCard = ({ image, firstName, id, lastName }: ContactType) => {
   const font = 30;
   const router = useRouter();
-  const gotoDetail = (id: number) => {
+  const gotoDetail = (id: string) => {
     router.push(`/${id}`);
   };
   return (

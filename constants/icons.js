@@ -13,7 +13,9 @@ import eye from "../assets/icons/eye.png";
 import play from "../assets/icons/play.png";
 import settings from "../assets/icons/settings.png";
 import call from "../assets/icons/call.png";
+import landing from "../assets/images/landing.png";
 import gallery from "../assets/icons/gallery.png";
+import pencil from "../assets/icons/pencil.png";
 
 export default {
   play,
@@ -32,4 +34,6 @@ export default {
   settings,
   call,
   gallery,
+  landing,
+  pencil,
 };

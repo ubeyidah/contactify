@@ -2,72 +2,90 @@ import {
   View,
   Text,
   Image,
-  FlatList,
   TouchableOpacity,
-  Linking,
-  Alert,
+  ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import CustomInput from "@/components/CustomInput";
 import icons from "@/constants/icons";
-import useContacts from "@/hooks/useContacts";
+import useContacts, { ContactType } from "@/hooks/useContacts";
 import { useIsFocused } from "@react-navigation/native";
 import ContactCard from "@/components/ContactCard";
 import { SwipeListView } from "react-native-swipe-list-view";
 import { useRouter } from "expo-router";
 import Button from "@/components/Button";
 
-const ListHeader = () => {
+const ListHeader = ({
+  handleChange,
+  value,
+}: {
+  handleChange: (val: string, name: string) => void;
+  value: String;
+}) => {
   return (
-    <View className="pb-9 pt-2 rounded-b-[40px] mb-4 -mx-3 bg-gray-500/10 px-4">
+    <View className="pb-6 pt-2 rounded-b-3xl mb-4 -mx-3 bg-gray-500/10 px-4">
       <Text className="text-lg text-secondary-200 ml-2 mb-1">Welcome Back</Text>
       <CustomInput
         placeholder="Search"
-        className="w-full !rounded-full !py-3"
+        className="w-full !rounded-2xl !py-3"
         icon={icons.search}
         name="search"
-        value=""
-        onChange={() => {}}
+        value={value as string}
+        onChange={handleChange}
       />
     </View>
   );
 };
 
 const Contacts = () => {
-  const { contacts, loadContacts } = useContacts();
-  const isFocused = useIsFocused();
+  let { contacts, loadContacts, makeCall, loading } = useContacts();
+  const [searchText, setSearchText] = useState<string>("");
+  const [contactsToDisplay, setContactsToDisplay] = useState<ContactType[]>([]);
   const router = useRouter();
+  const isFocused = useIsFocused();
   useEffect(() => {
-    if (isFocused) {
-      loadContacts();
-    }
+    setSearchText("");
+    loadContacts();
+    setContactsToDisplay([]);
   }, [isFocused]);
 
-  const makeCall = (phoneNumber: string) => {
-    const phoneUrl = `tel:${phoneNumber}`;
-    Linking.canOpenURL(phoneUrl)
-      .then((supported) => {
-        if (supported) {
-          Linking.openURL(phoneUrl);
-        } else {
-          Alert.alert(
-            "Error",
-            "Phone number is not valid or calling is not supported."
-          );
-        }
-      })
-      .catch((err) => console.error("An error occurred", err));
+  const handleSearch = (val: string, name: string) => {
+    setSearchText(() => val);
   };
 
+  useEffect(() => {
+    const matchText = searchText.toLowerCase();
+    const filteredContacts = contacts.filter((contact) => {
+      const name = contact.firstName.toLowerCase();
+      const lastName = contact.lastName.toLowerCase();
+      const phoneNumber = contact.phoneNumber;
+      return (
+        name.includes(matchText) ||
+        name.startsWith(matchText) ||
+        lastName.includes(matchText) ||
+        lastName.startsWith(matchText) ||
+        phoneNumber.includes(matchText)
+      );
+    });
+    setContactsToDisplay(filteredContacts);
+  }, [searchText, isFocused]);
   return (
-    <View>
-      <SafeAreaView className="h-screen w-full bg-primary px-3 pb-10">
-        <ListHeader />
+    <SafeAreaView className="h-screen w-full bg-primary px-3 pb-10">
+      <ListHeader handleChange={handleSearch} value={searchText} />
 
+      {loading ? (
+        <View className="flex items-center justify-center h-full">
+          <ActivityIndicator size={"large"} />
+        </View>
+      ) : (
         <SwipeListView
-          data={contacts}
+          data={
+            contactsToDisplay.length == 0 && !searchText
+              ? contacts
+              : contactsToDisplay
+          }
           ListEmptyComponent={() => (
             <View className="flex items-center justify-center h-[70vh] gap-5">
               <Text className="text-2xl font-bold text-slate-400">
@@ -78,7 +96,7 @@ const Contacts = () => {
                 onPress={() => {
                   router.push("/create");
                 }}
-                className="!rounded-full w-48 !py-3"
+                className="!rounded-lg !w-40 !py-4"
               />
             </View>
           )}
@@ -106,9 +124,9 @@ const Contacts = () => {
           closeOnRowPress
           closeOnRowOpen
         />
-      </SafeAreaView>
+      )}
       <StatusBar style="light" backgroundColor="#6b72801a" />
-    </View>
+    </SafeAreaView>
   );
 };
 
