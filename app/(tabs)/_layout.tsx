@@ -75,7 +75,7 @@ const _layout = () => {
                 color={color}
                 focused={focused}
                 icon={icons.bookmark}
-                name="Bontacts"
+                name="Bookmark"
               />
             );
           },
